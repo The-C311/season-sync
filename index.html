@@ -16,6 +16,73 @@
     <main>
         <section>
             <h2>Create a Rewatch Plan</h2>
+
+            <form>
+                <div>
+                    <label for="show-name">Show name</label>
+                    <input
+                        type="text"
+                        id="show-name"
+                        placeholder="The Paper"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="season-count">
+                        Number of seasons to rewatch
+                    </label>
+                    <input
+                        type="number"
+                        id="season-count"
+                        name="season-count"
+                        min="1"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="episode-count">
+                        Total number of episodes
+                    </label>
+                    <input
+                        type="number"
+                        id="episode-count"
+                        name="episode-count"
+                        min="1"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="epside-length">
+                        Average episode length in minutes
+                    </label>
+                    <input
+                        type="number"
+                        id="episdoe-length"
+                        name="episode-length"
+                        min="1"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="release-date">
+                        New season release date
+                    </label>
+                    <input
+                        type="date"
+                        id="release-date"
+                        name="release-date"
+                        required
+                    >
+                </div>
+
+                <button type="submit">
+                    Calculate Rewatch Plan
+                </button>
+            </form>
         </section>
     </main>
 </body>
