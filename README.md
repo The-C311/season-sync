@@ -22,8 +22,8 @@ a new season is released.
 ## Built With
 
 - HTML
+- CSS
 
 ## Project Status
 
-This project is currently in development. The first version focuses
-on creating the HTML structure and form.
+This project is currently in development. The HTML structure is complete, and basic CSS stylig is being added as I go.
