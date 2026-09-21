@@ -26,4 +26,4 @@ a new season is released.
 
 ## Project Status
 
-This project is currently in development. The HTML structure is complete, and basic CSS stylig is being added as I go.
+This project is currently in development. The HTML structure is complete, and basic CSS styling is being added as I go.
