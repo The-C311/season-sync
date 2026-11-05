@@ -21,9 +21,9 @@ function calculateDaysRemaining(releaseDate, today = new Date()) {
     return (premiere.getTime() - currentDay.getTime()) / 86400000;
 }
 
-function calculateDailyWatchTime(totalMinutes, daysRemaining) {
+function calculateDailyEpisodes(episodeCount, daysRemaining) {
     // Round up so the daily target leaves enough time to finish.
-    return Math.ceil(totalMinutes / daysRemaining);
+    return Math.ceil(episodeCount / daysRemaining);
 }
 
 const form = document.getElementById("rewatch-form");
@@ -53,19 +53,17 @@ form.addEventListener("submit", function (event) {
     const releaseDate = document.getElementById("release-date").value;
     const daysRemaining = calculateDaysRemaining(releaseDate);
     if (!Number.isFinite(daysRemaining) || daysRemaining <= 0) {
-        dailyResult.textContent = "Choose a future release date to calculate daily watch time.";
+        dailyResult.textContent = "Choose a future release date to calculate a daily episode target.";
         return;
     }
 
-    const dailyMinutes = calculateDailyWatchTime(totalMinutes, daysRemaining);
-    const hours = Math.floor(dailyMinutes / 60);
-    const minutes = dailyMinutes % 60;
-    dailyResult.textContent = `Required daily watch time: ${hours} hr ${minutes} min per day ` +
-        `(${dailyMinutes} minutes), over ${daysRemaining} ${daysRemaining === 1 ? "day" : "days"}. ` +
-        "Start today and finish before the premiere; rounded up to the next whole minute.";
-    if (dailyMinutes > 1440) {
-        dailyResult.textContent += " This plan requires more than 24 hours per day. Reduce the episode count or choose a later release date.";
-    }
+    const dailyEpisodes = calculateDailyEpisodes(episodeCount, daysRemaining);
+    dailyResult.textContent =
+        `Watch ${dailyEpisodes} ${dailyEpisodes === 1 ? "episode" : "episodes"} per day ` +
+        `to finish before the premiere. You have ${daysRemaining} ` +
+        `${daysRemaining === 1 ? "day" : "days"}, starting today. ` +
+        "Your final watching day may have fewer episodes, and you may finish early.";
+
 });
 
 // Clear the previous answer when the user changes their plan.

@@ -11,7 +11,7 @@ a new season is released.
 - Enter the average episode runtime
 - Enter the new season release date
 - Calculate total watch time in hours and minutes
-- Calculate required daily watch time before the premiere
+- Calculate required episodes per day before the premiere
 
 ## Planned Features
 
@@ -36,10 +36,10 @@ Use the total episode count across all selected seasons. For example, 3 episodes
 45 minutes each gives **2 hr 15 min (135 minutes total)**. Seasons and the release
 date do not affect this total. The release date determines your daily target.
 
-Daily watch time divides the total minutes by the calendar days from today up to
-(but not including) the premiere date, rounding up to a whole minute. For example,
-135 minutes over 4 days means 34 minutes per day. Today's date comes from your
-device's local timezone. Past or same-day premieres require a future date, and
-targets above 24 hours per day display a warning.
+The daily episode target divides the total episodes by the calendar days from today
+up to (but not including) the premiere, rounding up to a whole episode. For example,
+10 episodes over 4 days means 3 episodes per day, with 1 episode on the final day.
+You may finish early when there are more days than you need. Today's date comes
+from your device's local timezone. Past or same-day premieres require a future date.
 
 Run the automated checks with `node --test script.test.js`.

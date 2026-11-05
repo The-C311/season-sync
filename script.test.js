@@ -45,11 +45,11 @@ test('calendar days handle midnight, DST, leap days, and year boundaries', () =>
     }
 });
 
-test('daily minutes round up without increasing exact divisions', () => {
+test('daily episodes round up without increasing exact divisions', () => {
     const { context } = loadApp();
-    assert.equal(context.calculateDailyWatchTime(135, 4), 34);
-    assert.equal(context.calculateDailyWatchTime(120, 2), 60);
-    assert.equal(context.calculateDailyWatchTime(25, 100), 1);
+    assert.equal(context.calculateDailyEpisodes(10, 4), 3);
+    assert.equal(context.calculateDailyEpisodes(12, 4), 3);
+    assert.equal(context.calculateDailyEpisodes(3, 100), 1);
 });
 
 test('form shows total and daily target, then clears stale answers', () => {
@@ -58,12 +58,12 @@ test('form shows total and daily target, then clears stale answers', () => {
     handlers.submit({ preventDefault: () => { prevented = true; } });
     assert.ok(prevented);
     assert.match(elements['watch-time-result'].textContent, /135 minutes total/);
-    assert.match(elements['daily-watch-time-result'].textContent, /34 minutes.*4 days/);
+    assert.match(elements['daily-watch-time-result'].textContent, /Watch 1 episode per day.*4 days/);
     handlers.input();
     assert.equal(elements['daily-watch-time-result'].textContent, '');
     elements['release-date'].value = '2026-11-06';
     handlers.submit({ preventDefault() {} });
-    assert.match(elements['daily-watch-time-result'].textContent, /2 hr 15 min.*1 day\./);
+    assert.match(elements['daily-watch-time-result'].textContent, /Watch 3 episodes per day.*1 day,/);
 });
 
 test('past and same-day premieres keep total but request a future date', () => {
@@ -76,14 +76,26 @@ test('past and same-day premieres keep total but request a future date', () => {
     }
 });
 
-test('impossible daily target warns and invalid totals clear the old target', () => {
+test('large episode targets and invalid totals clear the old target', () => {
     const { elements, handlers } = loadApp();
     elements['episode-count'].valueAsNumber = 100;
     elements['release-date'].value = '2026-11-06';
     handlers.submit({ preventDefault() {} });
-    assert.match(elements['daily-watch-time-result'].textContent, /more than 24 hours/);
+    assert.match(elements['daily-watch-time-result'].textContent, /Watch 100 episodes per day/);
     elements['episode-count'].valueAsNumber = Infinity;
     handlers.submit({ preventDefault() {} });
     assert.equal(elements['daily-watch-time-result'].textContent, '');
     assert.match(elements['watch-time-result'].textContent, /smaller/);
+});
+
+test('daily episode target is independent of runtime', () => {
+    const { elements, handlers } = loadApp();
+    elements['episode-count'].valueAsNumber = 10;
+    handlers.submit({ preventDefault() {} });
+    const target = elements['daily-watch-time-result'].textContent;
+    assert.match(target, /Watch 3 episodes per day/);
+    elements['episode-length'].valueAsNumber = 60;
+    handlers.submit({ preventDefault() {} });
+    assert.equal(elements['daily-watch-time-result'].textContent, target);
+    assert.match(elements['watch-time-result'].textContent, /600 minutes total/);
 });
