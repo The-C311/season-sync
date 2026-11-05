@@ -11,10 +11,10 @@ a new season is released.
 - Enter the average episode runtime
 - Enter the new season release date
 - Calculate total watch time in hours and minutes
+- Calculate required daily watch time before the premiere
 
 ## Planned Features
 
-- Calculate required daily watch time
 - Create a personalized viewing schedule
 - Save rewatch plans
 - Search for television shows using an API
@@ -27,11 +27,19 @@ a new season is released.
 
 ## Project Status
 
-This project is currently in development. Total watch time is available; daily targets and viewing schedules are planned.
+This project is currently in development. Total watch time and daily targets are available; viewing schedules are planned.
 
 ## Calculate Watch Time
 
 Open `index.html` in a browser, fill in the form, and select **Calculate Rewatch Plan**.
 Use the total episode count across all selected seasons. For example, 3 episodes at
 45 minutes each gives **2 hr 15 min (135 minutes total)**. Seasons and the release
-date do not affect this total; they will support future scheduling features.
+date do not affect this total. The release date determines your daily target.
+
+Daily watch time divides the total minutes by the calendar days from today up to
+(but not including) the premiere date, rounding up to a whole minute. For example,
+135 minutes over 4 days means 34 minutes per day. Today's date comes from your
+device's local timezone. Past or same-day premieres require a future date, and
+targets above 24 hours per day display a warning.
+
+Run the automated checks with `node --test script.test.js`.
