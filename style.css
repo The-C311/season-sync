@@ -32,3 +32,27 @@ section {
     border-radius: 8px;
     margin-bottom: 24px;
 }
+
+.schedule-table {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+caption {
+    text-align: left;
+    padding-bottom: 12px;
+}
+
+th, td {
+    text-align: left;
+    padding: 12px 8px;
+    border-bottom: 1px solid gainsboro;
+}
+
+#more-days {
+    margin-top: 16px;
+}

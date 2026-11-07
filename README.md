@@ -13,9 +13,9 @@ a new season is released.
 - Calculate total watch time in hours and minutes
 - Calculate required episodes per day before the premiere
 
-## Planned Features
-
 - Create a personalized viewing schedule
+
+## Planned Features
 - Save rewatch plans
 - Search for television shows using an API
 
@@ -27,7 +27,7 @@ a new season is released.
 
 ## Project Status
 
-This project is currently in development. Total watch time and daily targets are available; viewing schedules are planned.
+This project is currently in development. Total watch time, daily episode targets, and dated viewing schedules are available.
 
 ## Calculate Watch Time
 
@@ -43,3 +43,12 @@ You may finish early when there are more days than you need. Today's date comes
 from your device's local timezone. Past or same-day premieres require a future date.
 
 Run the automated checks with `node --test script.test.js`.
+
+## Personalized Viewing Schedule
+
+Calculate a plan to see a dated table for your show, starting today. Each row lists
+an episode or episode range using continuous numbering across all seasons. The
+schedule follows your rounded-up daily episode target, with fewer episodes on the
+last watching day if necessary. It stops when all episodes are assigned, before
+the premiere. Long schedules show 30 days at a time; use **Show next 30 days** to
+see more. Editing any input clears the old schedule until you recalculate.

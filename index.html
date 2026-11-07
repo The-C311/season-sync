@@ -93,6 +93,19 @@
                 Enter your show's information to calculate total watch time and your daily episode target.
             </p>
             <p id="daily-watch-time-result" role="status"></p>
+            <div id="viewing-schedule" hidden>
+                <h3 id="schedule-title">Your viewing schedule</h3>
+                <p>Start today and follow the episode numbers across all seasons.
+                    Stop after the last listed episode; any remaining days are free.</p>
+                <div class="schedule-table">
+                    <table>
+                        <caption>Episodes to watch each day before the premiere</caption>
+                        <thead><tr><th scope="col">Date</th><th scope="col">Episodes</th></tr></thead>
+                        <tbody id="schedule-rows"></tbody>
+                    </table>
+                </div>
+                <button id="more-days" type="button" hidden>Show next 30 days</button>
+            </div>
         </section>
     </main>
 
