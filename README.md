@@ -17,8 +17,7 @@ a new season is released.
 
 - Save, load, and delete rewatch plans in this browser
 
-## Planned Features
-- Search for television shows using an API
+- Search TVmaze and select seasons through a Node.js backend
 
 ## Built With
 
@@ -32,7 +31,8 @@ This project is currently in development. Total watch time, daily episode target
 
 ## Calculate Watch Time
 
-Open `index.html` in a browser, fill in the form, and select **Calculate Rewatch Plan**.
+Run `npm start` with Node.js 22 or newer, then open http://127.0.0.1:8765/.
+Fill in the form and select **Calculate Rewatch Plan**.
 Use the total episode count across all selected seasons. For example, 3 episodes at
 45 minutes each gives **2 hr 15 min (135 minutes total)**. Seasons and the release
 date do not affect this total. The release date determines your daily target.
@@ -43,7 +43,7 @@ up to (but not including) the premiere, rounding up to a whole episode. For exam
 You may finish early when there are more days than you need. Today's date comes
 from your device's local timezone. Past or same-day premieres require a future date.
 
-Run the automated checks with `node --test script.test.js`.
+Run the automated checks with `npm test`.
 
 ## Personalized Viewing Schedule
 
@@ -64,3 +64,22 @@ be loaded, but require a future release date to generate a new schedule. **Delet
 removes that saved plan. Storage is local to this browser/device, not an account or
 cloud backup, and clearing site data removes it. Storage failures are reported
 without replacing unreadable saved data.
+
+## TV Search and Backend
+
+`server.js` serves public app files and provides `GET /api/shows?q=...` and
+`GET /api/shows/:id/seasons`. The browser calls these routes; the backend calls
+TVmaze. No dependencies or API key are needed. It binds to localhost for development.
+The earlier Python preview server must be stopped before starting this server on
+port 8765. Keep the same address to retain access to existing browser-saved plans.
+
+Select a show and one or more seasons, then choose **Use Selected Seasons**.
+Only aired regular episodes with known air timestamps count. Average runtime is
+rounded from known episode runtimes and is an estimate; missing runtimes require
+manual entry. Always enter the upcoming premiere date yourself. Schedule episode
+numbers start at 1 within the selected episodes, not TV season/episode labels.
+Saved plans retain the filled-in totals, not the API selection or episode list.
+
+Data: [TVmaze](https://www.tvmaze.com/api), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+The backend does not yet provide accounts or cloud storage; saved plans remain in
+localStorage. External API errors leave manual planning available.

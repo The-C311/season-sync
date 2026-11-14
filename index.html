@@ -6,6 +6,7 @@
     <title>Season Sync</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
+    <script src="search.js" defer></script>
 </head>
 <body>
     <header>
@@ -16,6 +17,25 @@
     </header>
 
     <main>
+        <section>
+            <h2>Find a TV Show</h2>
+            <form id="show-search-form">
+                <label for="show-query">Search by show name</label>
+                <input id="show-query" type="search" maxlength="100" required>
+                <button type="submit">Search Shows</button>
+            </form>
+            <p id="search-status" role="status"></p>
+            <ul id="search-results"></ul>
+            <fieldset id="season-picker" hidden>
+                <legend>Seasons to rewatch</legend>
+                <p>Counts include aired regular episodes only. Specials and episodes without air dates are excluded.</p>
+                <div id="season-options"></div>
+                <button type="button" id="apply-seasons">Use Selected Seasons</button>
+            </fieldset>
+            <p>TV data from <a href="https://www.tvmaze.com/">TVmaze</a>,
+                licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA</a>.
+                You can also enter all details manually below.</p>
+        </section>
         <section>
             <h2>Create a Rewatch Plan</h2>
 
