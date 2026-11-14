@@ -56,3 +56,8 @@ th, td {
 #more-days {
     margin-top: 16px;
 }
+
+#saved-plans { padding-left: 20px; }
+#saved-plans li { margin-bottom: 20px; overflow-wrap: anywhere; }
+#saved-plans button { margin: 0 8px 8px 0; }
+#save-plan { margin-top: 12px; }

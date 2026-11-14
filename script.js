@@ -131,3 +131,105 @@ form.addEventListener("input", function () {
     dailyResult.textContent = "";
     clearSchedule();
 });
+
+
+const savedPlansKey = "season-sync.plans.v1";
+const savedPlansList = document.getElementById("saved-plans");
+const saveStatus = document.getElementById("save-status");
+const planFields = ["show-name", "season-count", "episode-count", "episode-length", "release-date"];
+
+function isValidSavedPlan(plan) {
+    return plan && typeof plan === "object" &&
+        planFields.every(field => typeof plan[field] === "string") &&
+        plan["show-name"].trim().length > 0 &&
+        ["season-count", "episode-count", "episode-length"].every(field =>
+            Number.isSafeInteger(Number(plan[field])) && Number(plan[field]) > 0) &&
+        Number.isSafeInteger(Number(plan["episode-count"]) * Number(plan["episode-length"])) &&
+        Number.isFinite(calculateDaysRemaining(plan["release-date"]));
+}
+
+function readSavedPlans() {
+    const plans = JSON.parse(localStorage.getItem(savedPlansKey) || "[]");
+    if (!Array.isArray(plans) || !plans.every(isValidSavedPlan)) {
+        throw new Error("Invalid saved plans");
+    }
+    return plans;
+}
+
+function samePlan(first, second) {
+    return planFields.every(field => first[field] === second[field]);
+}
+
+function renderSavedPlans(plans) {
+    savedPlansList.replaceChildren();
+    if (plans.length === 0) {
+        const empty = document.createElement("li");
+        empty.textContent = "No saved plans yet.";
+        savedPlansList.append(empty);
+    }
+    for (const plan of plans) {
+        const item = document.createElement("li");
+        const label = document.createElement("p");
+        label.textContent = `${plan["show-name"]} — ${plan["episode-count"]} episodes, premiere ${plan["release-date"]}`;
+        const load = document.createElement("button");
+        load.type = "button";
+        load.textContent = `Load ${plan["show-name"]}`;
+        load.addEventListener("click", function () {
+            for (const field of planFields) {
+                document.getElementById(field).value = plan[field];
+            }
+            // Reuse the existing form calculation with today's date.
+            form.requestSubmit();
+            saveStatus.textContent = `Loaded ${plan["show-name"]}. Recalculated from today. ` +
+                "If the premiere has passed, choose a future date.";
+        });
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.textContent = `Delete ${plan["show-name"]}`;
+        remove.addEventListener("click", function () {
+            try {
+                const remaining = readSavedPlans().filter(saved => !samePlan(saved, plan));
+                localStorage.setItem(savedPlansKey, JSON.stringify(remaining));
+                renderSavedPlans(remaining);
+                saveStatus.textContent = `Deleted ${plan["show-name"]}.`;
+            } catch {
+                saveStatus.textContent = "Could not delete the plan. Saved data was not changed. Check browser storage and try again.";
+            }
+        });
+        item.append(label, load, remove);
+        savedPlansList.append(item);
+    }
+}
+
+document.getElementById("save-plan").addEventListener("click", function () {
+    if (!form.reportValidity()) return;
+    const plan = {};
+    for (const field of planFields) {
+        plan[field] = document.getElementById(field).value.trim();
+    }
+    if (!isValidSavedPlan(plan) || calculateDaysRemaining(plan["release-date"]) <= 0) {
+        saveStatus.textContent = "Enter a show name, positive whole numbers, and a future release date before saving.";
+        return;
+    }
+    try {
+        // Read again so another tab's saved plans are included.
+        const plans = readSavedPlans();
+        if (plans.some(saved => samePlan(saved, plan))) {
+            renderSavedPlans(plans);
+            saveStatus.textContent = "This plan is already saved.";
+            return;
+        }
+        plans.push(plan);
+        localStorage.setItem(savedPlansKey, JSON.stringify(plans));
+        renderSavedPlans(plans);
+        saveStatus.textContent = `Saved ${plan["show-name"]} in this browser.`;
+    } catch {
+        saveStatus.textContent = "Could not save the plan. Existing saved data was not changed. Check browser storage and try again.";
+    }
+});
+
+try {
+    renderSavedPlans(readSavedPlans());
+} catch {
+    saveStatus.textContent = "Saved plans could not be read. Existing data was left untouched. You can still calculate a plan.";
+}

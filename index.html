@@ -83,7 +83,9 @@
                 <button type="submit">
                     Calculate Rewatch Plan
                 </button>
+                <button type="button" id="save-plan">Save Plan</button>
             </form>
+            <p id="save-status" role="status"></p>
         </section>
         
         <section>
@@ -106,6 +108,12 @@
                 </div>
                 <button id="more-days" type="button" hidden>Show next 30 days</button>
             </div>
+        </section>
+        <section aria-labelledby="saved-plans-heading">
+            <h2 id="saved-plans-heading">Saved Rewatch Plans</h2>
+            <p>Saved in this browser on this device. Loading recalculates from today;
+                watched episodes are not tracked. Clearing browser data removes saved plans.</p>
+            <ul id="saved-plans"></ul>
         </section>
     </main>
 

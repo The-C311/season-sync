@@ -15,8 +15,9 @@ a new season is released.
 
 - Create a personalized viewing schedule
 
+- Save, load, and delete rewatch plans in this browser
+
 ## Planned Features
-- Save rewatch plans
 - Search for television shows using an API
 
 ## Built With
@@ -52,3 +53,14 @@ schedule follows your rounded-up daily episode target, with fewer episodes on th
 last watching day if necessary. It stops when all episodes are assigned, before
 the premiere. Long schedules show 30 days at a time; use **Show next 30 days** to
 see more. Editing any input clears the old schedule until you recalculate.
+
+## Saved Plans
+
+Fill in the form and select **Save Plan**. Saved plans appear below the results and
+remain after a reload in the same browser and site address. Identical plans are
+saved only once; changed inputs save a separate plan. **Load** restores all inputs
+and recalculates from today, without tracking watched episodes. Expired plans can
+be loaded, but require a future release date to generate a new schedule. **Delete**
+removes that saved plan. Storage is local to this browser/device, not an account or
+cloud backup, and clearing site data removes it. Storage failures are reported
+without replacing unreadable saved data.

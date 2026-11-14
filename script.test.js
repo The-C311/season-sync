@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function loadApp() {
+function loadApp(storage = { data: null, getItem() { return this.data; }, setItem(key, value) { this.data = value; } }) {
     const handlers = {};
     function node() {
         return {
@@ -16,6 +16,7 @@ function loadApp() {
     const elements = {
         'rewatch-form': {
             reportValidity: () => true,
+            requestSubmit: () => handlers.submit({ preventDefault() {} }),
             addEventListener: (name, callback) => { handlers[name] = callback; }
         },
         'watch-time-result': { textContent: '' },
@@ -24,9 +25,13 @@ function loadApp() {
         'schedule-title': node(),
         'schedule-rows': node(),
         'more-days': node(),
+        'saved-plans': node(),
+        'save-status': node(),
+        'save-plan': node(),
+        'season-count': { value: '1' },
         'show-name': { value: 'Example Show' },
-        'episode-count': { valueAsNumber: 3 },
-        'episode-length': { valueAsNumber: 45 },
+        'episode-count': { value: '3', valueAsNumber: 3 },
+        'episode-length': { value: '45', valueAsNumber: 45 },
         'release-date': { value: '2026-11-09' }
     };
     class FixedDate extends Date {
@@ -36,10 +41,11 @@ function loadApp() {
     }
     const context = vm.createContext({
         Date: FixedDate,
+        localStorage: storage,
         document: { getElementById: id => elements[id], createElement: node }
     });
     vm.runInContext(fs.readFileSync(`${__dirname}/script.js`, 'utf8'), context);
-    return { context, elements, handlers };
+    return { context, elements, handlers, storage };
 }
 
 test('calendar days handle midnight, DST, leap days, and year boundaries', () => {
@@ -166,4 +172,73 @@ test('schedule renders, paginates without duplicates, and clears on edits', () =
     elements['release-date'].value = '2026-11-04';
     handlers.submit({ preventDefault() {} });
     assert.equal(elements['viewing-schedule'].hidden, true);
+});
+
+
+test('saved plans persist across reloads, deduplicate, load all fields and delete', () => {
+    const first = loadApp();
+    first.elements['save-plan'].click();
+    first.elements['save-plan'].click();
+    assert.equal(JSON.parse(first.storage.data).length, 1);
+    const second = loadApp(first.storage);
+    assert.equal(second.elements['saved-plans'].children.length, 1);
+    second.elements['show-name'].value = 'Changed';
+    second.elements['saved-plans'].children[0].children[1].click();
+    assert.equal(second.elements['show-name'].value, 'Example Show');
+    assert.equal(second.elements['season-count'].value, '1');
+    assert.equal(second.elements['episode-count'].value, '3');
+    assert.equal(second.elements['episode-length'].value, '45');
+    assert.equal(second.elements['release-date'].value, '2026-11-09');
+    assert.equal(second.elements['viewing-schedule'].hidden, false);
+    second.elements['saved-plans'].children[0].children[2].click();
+    assert.equal(JSON.parse(first.storage.data).length, 0);
+    assert.equal(loadApp(first.storage).elements['saved-plans'].children[0].textContent, 'No saved plans yet.');
+});
+
+test('changed plans are separate and invalid input cannot be saved', () => {
+    const { elements, storage } = loadApp();
+    elements['save-plan'].click();
+    elements['show-name'].value = '<b>Another show</b>';
+    elements['save-plan'].click();
+    assert.equal(JSON.parse(storage.data).length, 2);
+    assert.match(elements['saved-plans'].children[1].children[0].textContent, /<b>Another show<\/b>/);
+    for (const value of ['', '0', '-1', '1.5']) {
+        elements['episode-count'].value = value;
+        elements['save-plan'].click();
+        assert.equal(JSON.parse(storage.data).length, 2);
+    }
+});
+
+test('corrupt storage and failed writes leave existing plans untouched', () => {
+    for (const data of ['not json', '{}', '[{"show-name":"Missing fields"}]']) {
+        const storage = { data, getItem() { return this.data; }, setItem(key, value) { this.data = value; } };
+        const app = loadApp(storage);
+        app.elements['save-plan'].click();
+        assert.equal(storage.data, data);
+        assert.match(app.elements['save-status'].textContent, /Could not save/);
+        app.handlers.submit({ preventDefault() {} });
+        assert.equal(app.elements['viewing-schedule'].hidden, false);
+    }
+    const app = loadApp();
+    app.elements['save-plan'].click();
+    const original = app.storage.data;
+    app.storage.setItem = () => { throw new Error('quota'); };
+    app.elements['show-name'].value = 'New';
+    app.elements['save-plan'].click();
+    assert.equal(app.storage.data, original);
+    app.elements['saved-plans'].children[0].children[2].click();
+    assert.equal(app.storage.data, original);
+    assert.match(app.elements['save-status'].textContent, /Could not delete/);
+});
+
+test('expired saved plans load but cannot produce a dated schedule', () => {
+    const app = loadApp();
+    app.elements['save-plan'].click();
+    const saved = JSON.parse(app.storage.data);
+    saved[0]['release-date'] = '2026-11-04';
+    app.storage.data = JSON.stringify(saved);
+    const loaded = loadApp(app.storage);
+    loaded.elements['saved-plans'].children[0].children[1].click();
+    assert.equal(loaded.elements['viewing-schedule'].hidden, true);
+    assert.match(loaded.elements['daily-watch-time-result'].textContent, /future release date/);
 });
