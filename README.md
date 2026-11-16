@@ -4,6 +4,15 @@ Season Sync is a web application that helps users calculate
 how much of a television series they need to watch each day before
 a new season is released.
 
+## See It in Action
+
+Search for a show, select seasons, enter a premiere date, and generate a daily
+episode target with a dated viewing schedule.
+
+![Season Sync demo: searching for Breaking Bad, selecting seasons, and generating a viewing schedule](images/season-sync-demo.gif)
+
+The premiere date in this demo is an example, not an announced release date.
+
 ## Current Features
 
 - Enter a show name
